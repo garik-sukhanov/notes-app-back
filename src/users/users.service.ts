@@ -1,0 +1,64 @@
+import { Injectable, Logger } from '@nestjs/common';
+import { RegisterAuthDto } from 'src/auth/dto/register-auth.dto';
+
+import * as bcrypt from 'bcrypt';
+import { bcryptConstant } from './constants';
+import { Repository, UpdateResult } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserEntity } from '../shared/models/user.entity';
+
+@Injectable()
+export class UsersService {
+  constructor(
+    @InjectRepository(UserEntity)
+    private userRepo: Repository<UserEntity>,
+  ) {}
+  private readonly logger: Logger = new Logger(UsersService.name, {
+    timestamp: true,
+  });
+
+  async findByEmail(email: string): Promise<UserEntity | null> {
+    return await this.userRepo.findOne({ where: { email } });
+  }
+
+  async findByRefreshToken(refreshToken: string): Promise<UserEntity | null> {
+    return await this.userRepo.findOne({ where: { refreshToken } });
+  }
+
+  async create(dto: RegisterAuthDto): Promise<UserEntity> {
+    const hashPassword = await bcrypt.hash(
+      dto.password,
+      bcryptConstant.saltOrRounds,
+    );
+    const newUser = {
+      email: dto.email,
+      password: hashPassword,
+      roles: ['user'],
+      username: 'username',
+      refreshToken: undefined,
+    };
+    this.logger.log(`Creating new user with email: ${dto.email}`);
+    const createdUser = await this.userRepo.save(newUser);
+    return createdUser;
+  }
+
+  async updateRefreshToken(
+    userId: UserEntity['id'],
+    refreshToken: string,
+  ): Promise<UpdateResult> {
+    this.logger.log(`Updating refresh token for user with id: ${userId}`);
+    return this.userRepo.update(userId, { refreshToken });
+  }
+
+  async getUsersList(): Promise<Partial<UserEntity>[]> {
+    const users = await this.userRepo.find();
+    const serialized = users.map((user) => ({
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      roles: user.roles,
+    }));
+
+    return serialized;
+  }
+}

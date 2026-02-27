@@ -1,0 +1,9 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    command: sh -c "yarn install && yarn migration:run && yarn start:dev"
