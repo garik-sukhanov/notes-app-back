@@ -39,18 +39,23 @@ export class NotesService {
     return { data: result, pagination };
   }
 
-  async findOne(id: string) {
-    const result = await this.noteRepo.findOne({ where: { id } });
+  async findOne(id: string, userId: string) {
+    const result = await this.noteRepo.findOne({
+      where: { id, user: { id: userId } },
+    });
     return { data: result };
   }
 
-  async update(id: string, updateNoteDto: UpdateNoteDto) {
-    const result = await this.noteRepo.update(id, updateNoteDto);
+  async update(id: string, userId: string, updateNoteDto: UpdateNoteDto) {
+    const result = await this.noteRepo.update(
+      { id, user: { id: userId } },
+      updateNoteDto,
+    );
     return { data: result };
   }
 
-  async remove(id: string) {
-    const result = await this.noteRepo.delete(id);
+  async remove(id: string, userId: string) {
+    const result = await this.noteRepo.delete({ id, user: { id: userId } });
     return { data: result };
   }
 }

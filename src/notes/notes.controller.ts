@@ -66,8 +66,8 @@ export class NotesController {
   })
   @Get(':id')
   @UseGuards(AuthGuard)
-  findOne(@Param('id') id: string) {
-    return this.notesService.findOne(id);
+  findOne(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
+    return this.notesService.findOne(id, user.sub);
   }
 
   @ApiOperation({ summary: 'Update a note by ID' })
@@ -78,8 +78,12 @@ export class NotesController {
   })
   @Patch(':id')
   @UseGuards(AuthGuard)
-  update(@Param('id') id: string, @Body() updateNoteDto: UpdateNoteDto) {
-    return this.notesService.update(id, updateNoteDto);
+  update(
+    @Param('id') id: string,
+    @CurrentUser() user: JwtPayload,
+    @Body() updateNoteDto: UpdateNoteDto,
+  ) {
+    return this.notesService.update(id, user.sub, updateNoteDto);
   }
 
   @ApiOperation({ summary: 'Delete a note by ID' })
@@ -89,7 +93,7 @@ export class NotesController {
   })
   @Delete(':id')
   @UseGuards(AuthGuard)
-  remove(@Param('id') id: string) {
-    return this.notesService.remove(id);
+  remove(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
+    return this.notesService.remove(id, user.sub);
   }
 }
