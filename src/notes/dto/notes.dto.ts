@@ -7,6 +7,9 @@ export class NoteDto {
   @ApiProperty({ example: 'Note title', required: true })
   title: string;
 
-  @ApiProperty({ example: 'Note description', required: true })
-  description: string;
+  @ApiProperty({ example: 'Note description', required: false, nullable: true })
+  description: string | null;
+
+  @ApiProperty({ example: 'Note creator', required: true })
+  userId: string;
 }

@@ -4,6 +4,7 @@ import { UpdateNoteDto } from './dto/update-notes.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { NoteEntity } from '@/shared/models/note.entity';
+import { UserEntity } from '@/shared/models/user.entity';
 
 @Injectable()
 export class NotesService {
@@ -12,13 +13,21 @@ export class NotesService {
     private noteRepo: Repository<NoteEntity>,
   ) {}
 
-  async create(createNoteDto: CreateNoteDto) {
-    const result = await this.noteRepo.save(createNoteDto);
+  async create(userId: string, createNoteDto: CreateNoteDto) {
+    const owner = new UserEntity();
+    owner.id = userId;
+    const result = await this.noteRepo.save({
+      title: createNoteDto.title,
+      description: createNoteDto.description,
+      user: owner,
+    });
     return { data: result };
   }
 
-  async findAll() {
-    const result = await this.noteRepo.find();
+  async findAll(userId: string) {
+    const result = await this.noteRepo.find({
+      where: { user: { id: userId } },
+    });
     const pagination = {
       total: result.length,
       page: 1,

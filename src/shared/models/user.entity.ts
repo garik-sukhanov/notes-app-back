@@ -5,7 +5,9 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   BaseEntity,
+  OneToMany,
 } from 'typeorm';
+import { NoteEntity } from './note.entity';
 
 @Entity('users')
 export class UserEntity extends BaseEntity {
@@ -26,6 +28,9 @@ export class UserEntity extends BaseEntity {
 
   @Column()
   password: string;
+
+  @OneToMany(() => NoteEntity, (note) => note.user)
+  notes: NoteEntity[];
 
   @CreateDateColumn()
   createdAt: Date;

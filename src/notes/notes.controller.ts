@@ -18,6 +18,7 @@ import {
   UpdateNoteResponseDto,
 } from './dto';
 import { AuthGuard } from '@/auth/auth.guard';
+import { CurrentUser, JwtPayload } from '@/auth/current-user.decorator';
 
 @Controller('api/notes')
 export class NotesController {
@@ -31,8 +32,11 @@ export class NotesController {
     type: CreateNoteResponseDto,
   })
   @UseGuards(AuthGuard)
-  create(@Body() createNoteDto: CreateNoteDto) {
-    return this.notesService.create(createNoteDto);
+  create(
+    @Body() createNoteDto: CreateNoteDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.notesService.create(user.sub, createNoteDto);
   }
 
   @ApiOperation({ summary: 'Get all notes' })
@@ -43,8 +47,8 @@ export class NotesController {
   })
   @Get()
   @UseGuards(AuthGuard)
-  findAll() {
-    return this.notesService.findAll();
+  findAll(@CurrentUser() user: JwtPayload) {
+    return this.notesService.findAll(user.sub);
   }
 
   @ApiOperation({ summary: 'Get a note by ID' })
