@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { NotesService } from './notes.service';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
@@ -16,6 +17,7 @@ import {
   CreateNoteDto,
   UpdateNoteResponseDto,
 } from './dto';
+import { AuthGuard } from '@/auth/auth.guard';
 
 @Controller('api/notes')
 export class NotesController {
@@ -28,6 +30,7 @@ export class NotesController {
     description: 'Note created successfully.',
     type: CreateNoteResponseDto,
   })
+  @UseGuards(AuthGuard)
   create(@Body() createNoteDto: CreateNoteDto) {
     return this.notesService.create(createNoteDto);
   }
@@ -39,6 +42,7 @@ export class NotesController {
     type: GetNotesResponseDto,
   })
   @Get()
+  @UseGuards(AuthGuard)
   findAll() {
     return this.notesService.findAll();
   }
@@ -50,6 +54,7 @@ export class NotesController {
     type: CreateNoteResponseDto,
   })
   @Get(':id')
+  @UseGuards(AuthGuard)
   findOne(@Param('id') id: string) {
     return this.notesService.findOne(id);
   }
@@ -61,6 +66,7 @@ export class NotesController {
     type: UpdateNoteResponseDto,
   })
   @Patch(':id')
+  @UseGuards(AuthGuard)
   update(@Param('id') id: string, @Body() updateNoteDto: UpdateNoteDto) {
     return this.notesService.update(id, updateNoteDto);
   }
@@ -71,6 +77,7 @@ export class NotesController {
     description: 'Note deleted successfully.',
   })
   @Delete(':id')
+  @UseGuards(AuthGuard)
   remove(@Param('id') id: string) {
     return this.notesService.remove(id);
   }
