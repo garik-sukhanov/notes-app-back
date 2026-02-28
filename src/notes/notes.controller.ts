@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { NotesService } from './notes.service';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
@@ -47,8 +48,14 @@ export class NotesController {
   })
   @Get()
   @UseGuards(AuthGuard)
-  findAll(@CurrentUser() user: JwtPayload) {
-    return this.notesService.findAll(user.sub);
+  findAll(
+    @CurrentUser() user: JwtPayload,
+    @Query('page') page?: string,
+    @Query('size') size?: string,
+  ) {
+    const pageNum = Number(page) || 1;
+    const sizeNum = Number(size) || 10;
+    return this.notesService.findAll(user.sub, pageNum, sizeNum);
   }
 
   @ApiOperation({ summary: 'Get a note by ID' })

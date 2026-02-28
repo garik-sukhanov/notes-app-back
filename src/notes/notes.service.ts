@@ -24,16 +24,18 @@ export class NotesService {
     return { data: result };
   }
 
-  async findAll(userId: string) {
-    const result = await this.noteRepo.find({
+  async findAll(userId: string, page = 1, size = 10) {
+    const [result, total] = await this.noteRepo.findAndCount({
       where: { user: { id: userId } },
+      order: { createdAt: 'DESC' },
+      skip: (page - 1) * size,
+      take: size,
     });
     const pagination = {
-      total: result.length,
-      page: 1,
-      size: 10,
+      total,
+      page,
+      size,
     };
-
     return { data: result, pagination };
   }
 
