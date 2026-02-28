@@ -34,7 +34,7 @@ export class UsersService {
       email: dto.email,
       password: hashPassword,
       roles: ['user'],
-      username: 'username',
+      username: dto.username,
       refreshToken: undefined,
     };
     this.logger.log(`Creating new user with email: ${dto.email}`);

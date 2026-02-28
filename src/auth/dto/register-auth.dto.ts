@@ -8,6 +8,10 @@ export class RegisterAuthDto {
   email: string;
 
   @IsNotEmpty()
+  @ApiProperty({ example: 'John Dow', required: true })
+  username: string;
+
+  @IsNotEmpty()
   @ApiProperty({ example: '12345678', required: true })
   password: string;
 }
